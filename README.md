@@ -236,11 +236,84 @@ dentro da tag voce pode definir variant={""} com valores predefinidos vindos da 
 
 
 #### Auth Setup (00:11:33)
+vamos usar o clerk para logar no aplicativo
+[Clerk.com](https://clerk.com/?utm_source=as-a-programmer&utm_medium=youtuber&utm_campaign=spotify-clone): https://clerk.com/?utm_source=as-a-programmer&utm_medium=youtuber&utm_campaign=spotify-clone
+
+- logue com sua conta nesse serviço e vá para dashboard
+- crie uma nova aplicação
+- nomeie para 'MusiGrau'
+- selecione apenas Google para seguir os mesmos passos do video
+
+Após criar a aplicação
+- selecione React e execute a partir do passo2
+em /frontend:
+```bash
+npm install @clerk/clerk-react
+```
+# seu b.o. no musigraufail era algo assim
+crie em frontend `.env.local`
+e insira a linha
+```
+VITE_CLERK_PUBLISHABLE_KEY=pk_test_ZGVhci1kdWNrLTgwLmNsZXJrLmFjY291bnRzLmRldiQ
+```
+
+depois em main.tsx insira logo abaixo dos imports
+
+```
+// Import your Publishable Key
+const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
+
+if (!PUBLISHABLE_KEY) {
+  throw new Error("Missing Publishable Key")
+}
+```
+
+sem a publishable key nossa aplicação vai travar.... como travou antes..... e por isso vc tava tendo que recomecar.....
+
+
+entao em main.tsx envolva <App /> com as tags
+```
+    <ClerkProvider publishableKey={PUBLISHABLE_KEY} afterSignOutUrl="/">
+      <App />
+    </ClerkProvider>
+```
+e importe do clerk/clerk-react
+assim voce poderá usar os components do clerk
+
+em app.tsx substituia o conteudo de <></> com
+```
+    <header>
+      <SignedOut>
+        <SignInButton />
+      </SignedOut>
+      <SignedIn>
+        <UserButton />
+      </SignedIn>
+    </header>
+```
+importe tudo de clerk/clerk-react
+
+agora voce pode logar com sua conta google e dar loggout
+
+vamos arrumar o botao de login com shadcn button
+
+a questao é que apesar de logar, nada acontece no DB da nossa aplicação
+apenas no dashboard do clerk é que podemos ver as atividades dos usuarios logados
+lah podemos gerenciar tudo sobre isso, deletar, banir, ver o perfil, etc
+
+agora precisamos criar nosso DB com MongoDB
+
+entao vamos para /backend
+
+
+
+#### Backend Setup (00:16:50)
+
+
 
 
 
 ### Implementation Sections
-- Backend Setup (00:16:50)
 - Database Setup & Signup Logic (00:29:19)
 - Protect Route Middleware (00:54:26)
 - Admin Routes & Controllers (01:04:26)
