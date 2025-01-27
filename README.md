@@ -135,6 +135,18 @@ git commit -m "commit"  # Create commit
 git push -u origin main # Push to remote
 ```
 
+## Extensões do vscode
+
+1. Codeium: AI Coding Autocomplete and Chat for Python, Javascript, Typescript, Java, Go, and more
+2. Prettier - Code formatter
+3. Tailwind CSS IntelliSense
+4. 
+5. 
+6. 
+7. 
+
+
+
 ## Project Notes
 
 ### Tech Stack Overview (00:00:00 - Demo)
@@ -309,12 +321,114 @@ entao vamos para /backend
 
 #### Backend Setup (00:16:50)
 
+1. Crie o package.json
+No terminal va para /backend com o comando:
+```bash
+npm init -y
+```
+ele registrará suas dependencias necessarias para a aplicaçao conforme elas forem instaladas
 
+2. instale dependencias
+
+- Express
+- Mongoose
+- Dotenv
+- Cloudinary  for upload images/audio files
+- Cors  get rid of cors errors in development
+- @clerk/express
+- Socket.io for real-time communication like send msgs or listen to user activities
+
+```bash
+npm i express mongoose dotenv cloudinary cors @clerk/express socket.io
+```
+
+- Nodemon		for real-time changes syncs
+
+```bash
+npm i -D nodemon
+```
+
+3. criar files e folders
+- Crie pasta /src dentro de backend
+- Crie index.js dentro de /src que será o entry point da nossa aplicação
+	pode ser index, app, server nas boas praticas
+
+4. iniciar express server, arrumar sintaxe, alterar scripts, .env
+Em `index.js` inicie o servidor express
+- mas primeiro altere em package.json type para module 
+	para usar a sintaxe import em vez de const require
+```javascript
+import express from "express";
+```
+
+depois disso voce altera o scripts do package.json e muda o test para dev e coloca nodemon src/index.js
+```javascript
+"dev": "nodemon src/index.js"
+```
+isso faz com que npm run dev execute o script dev com valor que colocamos do nodemon
+e ele altera em tempo real as mudanças que fizermos
+
+no index.js ainda importamos dotenv para lidar com variaveis do .env criado em /backend
+lah temos a variavel PORTcom valor 5000
+
+dotenv.config(); inicia a funcao para lidar com .env files
+
+const app = express(); roda o server
+const PORT = process.env.PORT; trabalha os dados do .env e joga na variavel criada
+
+app.listen(PORT, () => {
+	console.log("tarararara " + PORT);		trabalha mensagem no console com a variavel do .env
+});
+
+instale e logue na extensao codeium do vscode pra usar o autocomplete
+- se as opcoes no emmet nao aparecerem
+	TAB completa a sombra
+	CTRL + -> aceita proxima palavra da sombra
+- caso contrario ESC pra fechá-la
+- se sombras nao aparecerem, backspace apagando caracteres força sugestoes na sombra
+
+5. Agora criaremos rotas e implementaremos middlewares
+
+criamos a pasta routes em /src e o arquivo user.route.js (.js eh a extensao, .route eh uma convenção)
+
+```
+import { Router } from "express";
+
+const router = Router();
+
+router.get("/", (req, res) => {
+  res.send("User route with GET method");
+});
+
+export default router;
+```
+
+no index.js importamos userRoutes do .route.js
+e acima de app.listen colocue
+
+app.use("/api/users", userRoutes);
+
+faça isso pra todas as categorias q ele usa
+
+isso faz que a porta 5000 que eh o / seja navegada pelas rotas determinadas por /api/tananana
+dependendo de qual delas é chamada
+
+cada uma delas responde no html uma str fornecida
+voce testou um console.log pra ver se aparecia no terminal rodando o nodemon
+deu certo.... mas nao apareceu no console do F12 do navegador
+
+
+bora pra database
+
+
+
+#### Database Setup & Signup Logic (00:29:19)
+
+bora de MongoDB
 
 
 
 ### Implementation Sections
-- Database Setup & Signup Logic (00:29:19)
 - Protect Route Middleware (00:54:26)
 - Admin Routes & Controllers (01:04:26)
 - Album Routes & Controllers (01:34:28)
