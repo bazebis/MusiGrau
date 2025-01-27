@@ -426,6 +426,65 @@ bora pra database
 
 bora de MongoDB
 
+logue no site, crie um novo projeto adicione um cluster free sem mudar opcoes
+escolha pra instalar com node
+espere o link clique pra mostrar o password coloque esse valor em .env MONGODB_URI e antes da ? coloque o nome do seu db
+
+crie em src a pasta lib com db.js dentro
+```
+import mongoose from "mongoose";
+
+export const connectDB = async () => {
+  try {
+    const conn = await mongoose.connect(process.env.MONGODB_URI);
+    console.log(`Connected to MongoDB: ${conn.connection.host}`);
+  } catch (error) {
+    console.error(`Error connecting to MongoDB:`, error);
+    process.exit(1); // 1 is failure, 0 is success
+  }
+}
+```
+
+no index.js coloque 
+
+import {connectDB} from "./lib/db.js";
+
+e connectDB(); dentro de app.listen
+
+no site do atlas vah em network access e adicione um novo ip e selecione acessar de qualquer lugar, entao crie
+
+depois vah em clusters e browse collection
+
+entao vamos criar alguns arquivos em src
+
+criar pasta models e user.model.js
+```
+import mongoose from "mongoose";
+
+const userSchema = new mongoose.Schema({
+  fullName: {
+    type: String,
+    required: true,
+  },
+  imageUrl: {
+    type: String,
+    required: true,
+  },
+  clerkId: {
+    type: String,
+    required: true,
+    unique: true
+  }, 
+}, { timestamps: true });
+// createdAt, updatedAt
+```
+
+
+mongodb e clerk sao servicos diferentes
+entao devemos pegar o id do clerk e salvar no mongodb para manusear o usuario
+
+
+parou nos 39min
 
 
 ### Implementation Sections
