@@ -1,9 +1,10 @@
 # RECOMEÇO
 
 ## YouTube Reference
-[Project Tutorial Video](https://www.youtube.com/watch?v=4sbklcQ0EXc): https://www.youtube.com/watch?v=4sbklcQ0EXc
+### [Project Tutorial Video](https://www.youtube.com/watch?v=4sbklcQ0EXc)
+https://www.youtube.com/watch?v=4sbklcQ0EXc
 
-## Package Configurations
+## Original Package Configurations
 
 ### Frontend Package.json
 ```json
@@ -177,7 +178,7 @@ npm create vite@latest .
 2. Select React and TypeScript:
 ```bash
 npm i vite@5.4.10 #para usar versao correta do vite co0nforme o video
-npm install
+npm install #desnecessario caso tenha rodado comando acima
 npm run dev
 ```
 
@@ -198,12 +199,16 @@ export default App
 ```
 
 4. Setup Tailwind:
+- por causa do Shadcn UI ele precisa do tailwindcss@3.4.17
+- a versao atual eh 4.0 e mais facil de implementar, porem nao eh reconhecida pelo Shadcn UI durante a instalação
+
 ```bash
 npm install -D tailwindcss@3.4.17 postcss autoprefixer
 npx tailwindcss@3.4.17 init -p
 ```
-Isso cria os arquivos tailwind.config.js e postcss.config.js
+- Isso cria os arquivos tailwind.config.js e postcss.config.js
 No tailwind.config.js edite da seguinte maneira
+
 ```javascript
 /** @type {import('tailwindcss').Config} */
 export default {
@@ -218,38 +223,38 @@ export default {
 }
 ```
 
-No `/src/index.css` deixe assim:
+- No `/src/index.css` deixe assim:
 ```css
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 ```
 
-Instale no vscode a extensão Tailwind CSS IntelliSense
-
-em app.tsx altere a tag h1 adicionando uma className como text-red-500 text-5x1 para testar se funciona
+- Instale no vscode a extensão Tailwind CSS IntelliSense
+teste em app.tsx alterando a tag h1 adicionando uma className como text-red-500 text-5x1 para testar se funciona
 
 5. Shadcn UI Setup
-[Shadcn UI](https://ui.shadcn.com/docs/installation/vite): https://ui.shadcn.com/docs/installation/vite
+### [Shadcn UI](https://ui.shadcn.com/docs/installation/vite):
+https://ui.shadcn.com/docs/installation/vite
 
-va para o 3°passo e instale tudo ateh o passo 7
-que criara /lib/utils.ts
+- va para o 3°passo e instale tudo ateh o passo 7, que criara /lib/utils.ts
 
-entao execute o passo 8 no terminal para intalar o component button
+- entao execute o passo 8 no terminal para intalar o component button
 ```bash
 npx shadcn@latest add button
 ```
-ele cria a pasta components com o botao da shadcn lah dentro
+- ele cria a pasta components com o botao da shadcn lah dentro
 
-Em app.tsx insira a tag Button e importe ela de /components/ui
-
-dentro da tag voce pode definir variant={""} com valores predefinidos vindos da shadcn
+- Em app.tsx insira a tag Button e importe ela de /components/ui
+  dentro da tag voce pode definir variant={""} com valores predefinidos vindos da shadcn
 
 
 
 #### Auth Setup (00:11:33)
+
 vamos usar o clerk para logar no aplicativo
-[Clerk.com](https://clerk.com/?utm_source=as-a-programmer&utm_medium=youtuber&utm_campaign=spotify-clone): https://clerk.com/?utm_source=as-a-programmer&utm_medium=youtuber&utm_campaign=spotify-clone
+### [Clerk.com](https://clerk.com/?utm_source=as-a-programmer&utm_medium=youtuber&utm_campaign=spotify-clone):
+https://clerk.com/?utm_source=as-a-programmer&utm_medium=youtuber&utm_campaign=spotify-clone
 
 - logue com sua conta nesse serviço e vá para dashboard
 - crie uma nova aplicação
@@ -269,7 +274,7 @@ e insira a linha
 VITE_CLERK_PUBLISHABLE_KEY=pk_test_ZGVhci1kdWNrLTgwLmNsZXJrLmFjY291bnRzLmRldiQ
 ```
 
-depois em main.tsx insira logo abaixo dos imports
+- depois em main.tsx insira logo abaixo dos imports
 
 ```
 // Import your Publishable Key
@@ -280,17 +285,16 @@ if (!PUBLISHABLE_KEY) {
 }
 ```
 
-sem a publishable key nossa aplicação vai travar.... como travou antes..... e por isso vc tava tendo que recomecar.....
+**sem a publishable key nossa aplicação vai travar.... como travou antes..... e por isso vc tava tendo que recomecar.....**
 
 
-entao em main.tsx envolva <App /> com as tags
+- entao em main.tsx envolva <App /> com as tags
 ```
     <ClerkProvider publishableKey={PUBLISHABLE_KEY} afterSignOutUrl="/">
       <App />
     </ClerkProvider>
 ```
-e importe do clerk/clerk-react
-assim voce poderá usar os components do clerk
+e importe do clerk/clerk-react, assim voce poderá usar os components do clerk
 
 em app.tsx substituia o conteudo de <></> com
 ```
@@ -428,6 +432,7 @@ bora de MongoDB
 
 logue no site, crie um novo projeto adicione um cluster free sem mudar opcoes
 escolha pra instalar com node
+nao precisa rodar o comando npm pq usaremos o mongoose que ja foi instalado no nosso projeto
 espere o link clique pra mostrar o password coloque esse valor em .env MONGODB_URI e antes da ? coloque o nome do seu db
 
 crie em src a pasta lib com db.js dentro
@@ -477,34 +482,307 @@ const userSchema = new mongoose.Schema({
   }, 
 }, { timestamps: true });
 // createdAt, updatedAt
+
+export const User = mongoose.model("User", userSchema);
 ```
 
 
-mongodb e clerk sao servicos diferentes
-entao devemos pegar o id do clerk e salvar no mongodb para manusear o usuario
+- mongodb e clerk sao servicos diferentes, entao devemos pegar o id do clerk e salvar no mongodb para manusear o usuario e suas atividades na aplicação
 
 
 parou nos 39min
 
 
-### Implementation Sections
-- Protect Route Middleware (00:54:26)
-- Admin Routes & Controllers (01:04:26)
-- Album Routes & Controllers (01:34:28)
-- Song Routes & Controllers (01:40:29)
-- User Routes & Controllers (01:50:04)
-- Auth Provider & Callback Page (02:02:40)
-- Main Layout and Left Sidebar (02:38:24)
-- Album Page (03:25:52)
-- Friends Activity (03:47:45)
-- Home Page (04:04:47)
-- Play Song Functionality & Queue (04:36:31)
-- Play Button Component (05:12:48)
-- Playback Controls Component (05:19:43)
-- Admin Page (Add Song) (05:39:42)
-- Admin Page (Add Albums) (06:43:08)
-- Socket.io Implementation (06:53:32)
-- Chat Page UI (07:49:51)
-- Custom 404 Page (08:17:24)
-- Deployment Guide (08:19:56)
-- Final Tests & Outro (08:39:28)
+voltou
+
+- agora crie song.model.js
+```
+import mongoose from "mongoose";
+
+const songSchema = new mongoose.Schema({
+  title: {
+    type: String,
+    required: true,
+  },
+  artist: {
+    type: String,
+    required: true,
+  },
+  imageUrl: {
+    type: String,
+    required: true,
+  },
+  audioUrl: {
+    type: String,
+    required: true,
+  },
+  duration: {
+    type: Number,
+    required: true,
+  },
+  albumId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Album",
+    required: false
+  }  
+}, { timestamps: true });
+
+export const Song = mongoose.model("Song", songSchema);
+```
+album id vai puxar do arquivos que criaremos album.model.js
+```
+import mongoose from "mongoose";
+
+const albumSchema = new mongoose.Schema({
+  title: {
+    type: String,
+    required: true,
+  },
+  artist: {
+    type: String,
+    required: true,
+  },
+  imageUrl: {
+    type: String,
+    required: true,
+  },
+  releaseYear: {
+    type: Number,
+    required: true,
+  },
+  songs: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Song",
+    },
+  ],
+}, { timestamps: true });
+
+export const Album = mongoose.model("Album", albumSchema);
+```
+
+- por ultimo criar o message.model.js para salvar mensagens no db e ver o historico de msgs
+```
+import mongoose from "mongoose";
+
+const messageSchema = new mongoose.Schema({
+  senderId: {
+    type: String,
+    required: true,
+  },  // clerk user ID
+  receiverId: {
+    type: String,
+    required: true,
+  }, // clerk user ID
+  content: {
+    type: String,
+    required: true,
+  }, 
+}, {timestamps: true});
+
+export const Message = mongoose.model("Message", messageSchema);
+
+```
+- em src crie a pasta controller para armazenar as rotas de nossos .route.js e manter um codigo limpo
+- crie um admin.controller.js e coloque as rotas de admin.route.js, o qual deve importar o seu respectivo controller
+- admin.controller.js
+```
+export const getAdmin = (req, res) => {
+  res.send("Admin route with GET method");
+  console.log("Rota de adminisrtador com método GET");
+}
+```
+- admin.route.js
+```
+import { Router } from "express";
+import { getAdmin } from "../controller/admin.controller.js";
+
+const router = Router();
+
+router.get("/", getAdmin);
+
+export default router;
+```
+
+
+- agora vamos criar as rotas e controllers para logica de auth
+  quando um user sign up com o clerk, precisamos criar e salvar um user no db
+  se for um login, precisamos ver se o user ja existe no db e se sim, fazer o login (nao precisa criar um user no db)
+  se for 1° login = sign up
+  se nao for 1° login = login
+
+- vamos criar uma rota de callback
+
+em auth.route.js mudar get para POST com endpoint /callback async assim:
+```
+import { Router } from "express";
+import User from "../models/user.model.js";
+
+const router = Router();
+
+router.post("/callback", async (req, res) => {
+  try {
+    const { id, firstName, lastName, imageUrl } = req.body;
+
+    //check if user exists
+    const user = await User.findOne({ clerkId: id });
+
+    if (!user) {
+      // signup
+      await User.create({
+        clerkId: id,
+        fullName: `${firstName} ${lastName}`,
+        imageUrl,
+      });
+    }
+
+    res.status(200).json({ success: true });
+
+  } catch (error) {
+    console.log("Error in auth callback", error);
+    res.status(500).json({message: "Internal server error", error});
+  }
+});
+
+export default router;
+```
+assim os campos utilizados conforme a nomenclatura criada pro clerk serao manipulados
+porem pro req.body funcionar no index, precisamos de um json parser
+
+- no index.js adicione o json parser
+
+app.use(express.json());  // to parse req.body
+
+
+basicamente nos criamos uma verificação de user existente ou nao e se nao existir, criamos um novo user no db
+
+
+dai vamos tirar a funcao e o import user de .route.js e vamos colocar no controller.js como authCallback que vai pro route no lugar da funcao movida
+
+
+com isso vamos sincronizar o serviço do clerk com nosso db finalizando nossa sessao sobre isso
+
+1. criamos o backend application
+2. instalamos o tailwind
+3. instalamos o shadcn ui
+4. instalamos o clerk authentication
+5. e fizemos a beirada do nosso backend com alguns endpoints implantados
+6. tbm fizemos um controllers que verifica usuario clerk no db para saber se eh signup ou login
+
+
+
+#### Protect Route Middleware (00:54:26)
+
+
+
+
+
+#### Admin Routes & Controllers (01:04:26)
+
+
+
+
+
+#### Album Routes & Controllers (01:34:28)
+
+
+
+
+
+#### Song Routes & Controllers (01:40:29)
+
+
+
+
+
+#### User Routes & Controllers (01:50:04)
+
+
+
+
+
+#### Auth Provider & Callback Page (02:02:40)
+
+
+
+
+
+#### Main Layout and Left Sidebar (02:38:24)
+
+
+
+
+
+#### Album Page (03:25:52)
+
+
+
+
+
+#### Friends Activity (03:47:45)
+
+
+
+
+
+#### Home Page (04:04:47)
+
+
+
+
+
+#### Play Song Functionality & Queue (04:36:31)
+
+
+
+
+
+#### Play Button Component (05:12:48)
+
+
+
+
+
+#### Playback Controls Component (05:19:43)
+
+
+
+
+
+#### Admin Page (Add Song) (05:39:42)
+
+
+
+
+
+#### Admin Page (Add Albums) (06:43:08)
+
+
+
+
+
+#### Socket.io Implementation (06:53:32)
+
+
+
+
+
+#### Chat Page UI (07:49:51)
+
+
+
+
+
+#### Custom 404 Page (08:17:24)
+
+
+
+
+
+#### Deployment Guide (08:19:56)
+
+
+
+
+
+#### Final Tests & Outro (08:39:28)

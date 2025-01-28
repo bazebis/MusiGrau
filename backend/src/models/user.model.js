@@ -14,7 +14,7 @@ const userSchema = new mongoose.Schema({
     required: true,
     unique: true
   }, 
-}, { timestamps: true });
+}, { timestamps: true });   // serve para registrar horario de determinada atividade do usuario
 // createdAt, updatedAt
 
 
