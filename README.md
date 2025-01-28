@@ -673,8 +673,69 @@ com isso vamos sincronizar o serviço do clerk com nosso db finalizando nossa se
 
 #### Protect Route Middleware (00:54:26)
 
+- nesse capitulo vamos criar um middleware para proteger rotas que nao devem ser acessadas por normal users
+- vamos utilizar @clerk/expressjs para proteger rotas
+[clerk docs](https://clerk.com/docs):
+https://clerk.com/docs
+
+- procure clerk express SDK (nao use nodeSDK pois ele sera deprecated)
+
+depois de inicializar nossa app com express(), vamos chamaro clerkMiddleware() do pacote @clerk/express
+isso vai por o auth key na nossa request
+
+em index.js importe o clerkMiddleware e andtes das rotas use a funcao no app
+o auth obj tem detalhes na documentacao do clerk como ex: sessionId, userId, orgId, xRole, xSlug, etc
+temos tbm funcoes pra importar como getAuth, clerkMiddleware, requireAuth, etc
+
+- vamos criar uma pasta middleware pra conferir se um user é admin, ou se esta autenticado
+em auth.middleware.js 
+```
+import { clerkClient } from "@clerk/express";
+
+export const protectRoute = async (req, res, next) => {
+  vai ter um codigo aqui  
+}
+```
+a funcao protectRoute recebe req, res, next e ao utilizala depois dos endpoits das rotas, ela verifica se o user esta autenticado
+pois nao queremos que ele 'curta' uma musica sem estar logado
+entao se em router.get("/like", protectRoute, (req, res) => {}) ele executa o 'next' (q eh o que vem depois do protectRoute) somente se o user esta logado
+
+em .env adicione ADMIN_EMAIL=email do seu usuario logado no clerk
+
+e em auth.middleware.js depois de protectRoute export o requireAdmin que eh uma funcao que verifica se o user eh admin
+```
+import { clerkClient } from "@clerk/express";
+
+export const protectRoute = async (req, res, next) => {
+  if (!req.auth.userId) {
+    return res.status(401).json({ message: "Unauthorized - you must be logged in" });    
+  }
+
+  next(); // isso eh o que vier na sequencia de protectRoute
+};
+
+export const requireAdmin = async (req, res, next) => {
+  try {
+    const currentUser = await clerkClient.users.getUser(req.auth.userId);
+    const isAdmin = process.env.ADMIN_EMAIL === currentUser.primaryEmailAddress?.emailAddress;
+
+    if (!isAdmin) {
+      return res.status(403).json({ message: "Unauthorized - you must be an admin" });
+    }
+
+    next();
+  } catch (error) {
+    
+  }
+}
+```
+assim em admin.routes.js router.get("/add-song", protectRoute, requireAdmin, createSong);
+protectRoute -> se esta logado
+requireAdmin -> se eh admin
+entao ele pode createSong
 
 
+agora vamos criar rotas controles de admin
 
 
 #### Admin Routes & Controllers (01:04:26)
