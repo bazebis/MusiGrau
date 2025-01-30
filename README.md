@@ -145,7 +145,7 @@ git push -u origin main # Push to remote
 1. Codeium: AI Coding Autocomplete and Chat for Python, Javascript, Typescript, Java, Go, and more
 2. Prettier - Code formatter
 3. Tailwind CSS IntelliSense
-4. 
+4. ES7+ React/Redux/React-Native snippets
 5. 
 6. 
 7. 
@@ -1102,7 +1102,132 @@ export const getStats = async (req, res, next) => {
 
 #### Auth Provider & Callback Page (02:02:40)
 
+ele começa mudando pro frontend e alterando a porta pra 3000 no defineConfig() do vite config
+vite.config.js
+```js
+  server: {
+    port: 3000,  
+  }
+```
 
+dai ele instala mais dependencias
+```bash
+npm install react-router-dom
+```
+
+instala mais extensoes do vscode  ES7+ React/Redux/React-Native snippets
+
+dai em main.tsx ele envolver o <App /> em <BrowserRouter />>
+
+em App.tsx ele deixa assim
+```tsx
+import { axiosInstance } from "@/lib/axios";
+import { useAuth } from "@clerk/clerk-react";
+import { Loader } from "lucide-react";
+import { useEffect, useState } from "react";
+
+const updateApiToken = (token: string | null) => {
+	if (token) axiosInstance.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+	else delete axiosInstance.defaults.headers.common["Authorization"];
+};
+
+const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+	const { getToken } = useAuth();
+	const [loading, setLoading] = useState(true);
+
+	useEffect(() => {
+		const initAuth = async () => {
+			try {
+				const token = await getToken();
+				updateApiToken(token);
+
+
+
+			} catch (error:any) {
+        updateApiToken(null);
+        console.log("Error in AuthProvider", error)
+      } finally {
+        setLoading(false);
+      }
+		};
+
+    initAuth();
+	}, [getToken]);
+
+  if (loading) return(
+    <div className="h-screen flex items-center justify-center w-full">
+      <Loader className="size-8 text-emerald-500 animate-spin"/>      // so funfa depois que instalar o lucide-react e importar ele
+    </div>
+  )
+
+	return <>{children}</>;
+};
+export default AuthProvider;
+
+```
+
+e instala mais dependencias
+```bash
+npm i lucide-react
+```
+
+vai em main.tsx e 'wrapa' o BrowserRouter com AuthProvider e importa ele neh...se nao num nao....
+
+dai depois disso feito.... no localhost:3000 toda vez que voce atualizar a pagina vai aparecer uma animaçao no estilo 'carregando'
+dai vamos colocar o design em darkmode alterando no
+
+index.html
+```html
+<html lang="en" class="dark">...</html>
+```
+
+assim fica fonte clara e fundo escuro
+
+
+dai com essa parada que voce fez no AuthProvider:
+```tsx
+const updateApiToken = (token: string | null) => {
+	if (token) axiosInstance.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+	else delete axiosInstance.defaults.headers.common["Authorization"];
+};
+```
+com isso no <AuthProvider /> voce nao precisa adicionar o hearde em mais nenhum lugar 
+e dai toda vez que voce atualizar ele vai checkar pra autenticaçao e adicionar o token pro axiosInstance
+alem de mostrar a animacaozinha de carregando com o <Loader />
+
+
+muita coisa rolou
+
+
+
+mas basicamente ele colocaou aquele esquema que sincroniza o login com clerkProvider no mongoDB tbm
+com tudo aquelas rotas de autenticacao e etc  /sso-callback  /auth-callback e ver se eh signUp ou login e entao te joga pra Home
+
+foi criado a homepage a authcalbackpage
+
+puxou um card do shadcn ui e teve q dar um npm installdo shad
+
+
+dai ele tinha terminado o role mas num salvava as coisas no DB, dai ele achou no clerk docs q valtava importar umas coisas:
+clerk_publishable_key e clerk_secret_key
+
+
+
+por fim ele otimiza o codigo um pouco mais ....
+na AuthCallbackPage, quando estamos em development mode, o useEffect vai rodar 2x
+e dai vai tentar criar o usuarios 2x
+
+dai ele adiciona embaixo do navigate
+
+const syncAttempted = useRef(); // importa useRef do react
+
+dentro do useEffect ele poe no primeiro iff || syncAttempted.current
+e depois do bloco do await ele coloca o syncAttempted.current = true
+
+assim ele verifica se ja tentou sincronizar o user ou nao pra fazer isso apenas uma vez no useEffect
+
+
+e bora pra proxima etapa!!!
 
 
 
