@@ -889,7 +889,7 @@ export default router;
 
 album.controller.js
 ```js
-import { Album } from "../model/album.model.js";
+import { Album } from "../models/album.model.js";
 
 export const getAllAlbums = async (req, res, next) => {
   try {
@@ -943,7 +943,7 @@ export default router;
 
 song.controller.js
 ```js
-import { Song } from "../model/song.model.js";
+import { Song } from "../models/song.model.js";
 
 export const getAllSongs = async (req, res, next) => {
   try {
@@ -1007,6 +1007,95 @@ com uma rota pra ver todas as musicas pro admin e outras pra ver 6 musicas aleat
 
 #### User Routes & Controllers (01:50:04)
 
+cria funcoes e rotas pro user e pro stats
+
+user.route.js
+```js
+import { Router } from "express";
+import { protectRoute } from "../middleware/auth.middleware.js";
+import { getAllUsers } from "../controller/user.controller.js";
+
+
+const router = Router();
+
+router.get("/", protectRoute, getAllUsers );
+// todo: getMessages
+
+export default router;
+```
+
+user.controller.js
+```js
+import { User } from "../models/user.model.js";
+
+export const getAllUsers = async (req, res, next) => {
+	try {
+    const currentUserId = req.auth.userId;
+		const users = await User.find({clerkId: {$ne: currentUserId}});
+    res.status(200).json(users);
+	} catch (error) {
+    next(error);
+  }
+};
+```
+stats.route.js
+```js
+import { Router } from "express";
+import { protectRoute, requireAdmin } from "../middleware/auth.middleware.js";
+import { getStats } from "../controller/stat.controller.js";
+
+const router = Router();
+
+router.get("/", protectRoute, requireAdmin, getStats);
+
+export default router;
+```
+
+stats.controller.js
+```js
+import { Album } from "../models/album.model.js";
+import { Song } from "../models/song.model.js";
+import { User } from "../models/user.model.js";
+
+export const getStats = async (req, res, next) => {
+	try {
+		// assim um fica esperando (await) o outro
+		// const totalSongs = await Song.countDocuments();
+		// const totalUsers = await User.countDocuments();
+		// const totalAlbums = await Album.countDocuments();
+
+		// assim ele fica executando em paralelo
+		const [totalSongs, totalUsers, totalAlbums, uniqueArtists] = await Promise.all([
+			Song.countDocuments(),
+			User.countDocuments(),
+			Album.countDocuments(),
+
+			Song.aggregate([
+				{
+					$unionWith: {
+						coll: "albums",
+						pipeline: [],
+					},
+				},
+				{
+					$group: {
+						_id: "$artist",
+					},
+				},
+				{
+					$count: "count",
+				},
+			]),
+		]);
+
+    res.status(200).json({ totalSongs, totalUsers, totalAlbums, totalArtists: uniqueArtists[0]?.count || 0});
+    
+	} catch (error) {
+		next(error);
+	}
+}
+
+```
 
 
 
