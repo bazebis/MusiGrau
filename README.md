@@ -871,7 +871,10 @@ mas vamos continuar... pq ele nao testa as paginas.... só ve se o servidor ta r
 
 #### Album Routes & Controllers (01:34:28)
 
-album.routes.js
+faz duas funcoes e poe nas rotas
+uma pra pegar todos albums e outra pra procurar um album pelo id
+
+album.route.js
 ```js
 import { Router } from "express";
 import { getAllAlbums, getAlbumById } from "../controller/album.controller.js";
@@ -917,14 +920,88 @@ export const getAlbumById = async (req, res, next) => {
 
 
 
-
-
-
-
-
 #### Song Routes & Controllers (01:40:29)
+fez varias funcoes pro songs e ta colocando nas rotas
+
+song.route.js
+```js
+import { Router } from "express";
+import { getAllSongs, getFeaturedSongs, getTrendingSongs, getMadeForYouSongs, } from "../controller/song.controller.js";
+import { protectRoute, requireAdmin } from "../middleware/auth.middleware.js";
 
 
+const router = Router();
+
+router.get("/", protectRoute, requireAdmin ,getAllSongs);
+router.get("/featured", getFeaturedSongs);
+router.get("/made-for-you", getMadeForYouSongs);
+router.get("/trending", getTrendingSongs);
+
+
+export default router;
+```
+
+song.controller.js
+```js
+import { Song } from "../model/song.model.js";
+
+export const getAllSongs = async (req, res, next) => {
+  try {
+    const songs = await Song.find().sort({ createdAt: -1 }); // ordenado de mais recente para mais antigo
+    res.status(200).json(songs);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getFeaturedSongs = async (req, res, next) => {
+  try {
+    // pega 6 musicas aleatorias com mongodb aggregate pipeline
+    const songs = await Song.aggregate([
+      { $sample: { size: 6 } },
+      { $project: { _id: 1, title: 1, artist: 1, imageUrl: 1, audioUrl: 1 } }
+    ])
+
+    res.status(200).json(songs);
+  } catch (error) {
+    next(error);
+  }
+};
+
+
+export const getMadeForYouSongs = async (req, res, next) => {
+  try {
+    // pega 4 musicas aleatorias com mongodb aggregate pipeline
+    const songs = await Song.aggregate([
+      { $sample: { size: 4 } },
+      { $project: { _id: 1, title: 1, artist: 1, imageUrl: 1, audioUrl: 1 } }
+    ])
+
+    res.status(200).json(songs);
+  } catch (error) {
+    next(error);
+  }
+};
+
+
+export const getTrendingSongs = async (req, res, next) => {
+  try {
+    // pega 6 musicas aleatorias com mongodb aggregate pipeline
+    const songs = await Song.aggregate([
+      { $sample: { size: 6 } },
+      { $project: { _id: 1, title: 1, artist: 1, imageUrl: 1, audioUrl: 1 } }
+    ])
+
+    res.status(200).json(songs);
+  } catch (error) {
+    next(error);
+  }
+};
+
+
+```
+
+com uma rota pra ver todas as musicas pro admin e outras pra ver 6 musicas aleatorias no featured e 4 musicas aleatorias no made for you e trending
 
 
 
