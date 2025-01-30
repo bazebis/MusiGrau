@@ -1,3 +1,7 @@
+claude api key do bokwa
+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
+key "   "
+
 # RECOMEÇO
 
 ## YouTube Reference
@@ -738,13 +742,181 @@ entao ele pode createSong
 agora vamos criar rotas controles de admin
 
 
+
 #### Admin Routes & Controllers (01:04:26)
 
+  ***por hora temos de importante:*** 
+  - import { clerkMiddleware } from "@clerk/express";
+  - authCallback para checar se user vai signup ou login
+  - protectRoute para confirmar se esta logado
+  - requireAdmin para confirmar se eh admin
 
+  isso tudo foi criado com req.auth do clerk
+
+
+**OBS** ele esqueceu do catch(error) no requireAdmin do auth.middleware.js
+```
+return res.status(500).json({ message: "Internal Server Error", error });
+```
+
+1. implementando o Cloudinary
+  - um admin deve poder adicionar musicas e imagens
+  - para isso usamos o Cloudinary
+
+[Cloudinary](https://cloudinary.com/):
+https://cloudinary.com/
+
+  - faça login
+  - clique em settings
+  - clique em API keys
+  - copie o API Key
+  - cole no .env como CLOUDNARY_API_KEY=tarara
+
+  - tambem precisa do api secret e o cloud name
+```
+CLOUDNARY_API_KEY=457177885678123
+CLOUDNARY_API_SECRET=bBxDuCXfE8G0ZB_1EhsnoNZtGes
+CLOUDNARY_CLOUD_NAME=dtcep3fje
+```
+
+em lib crie um cloudinary.js
+```
+import {v2 as cloudinary} from "cloudinary";
+
+import dotenv from "dotenv";
+dotenv.config();
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+export default cloudinary   // com esse obj poderemos upload imagens e audio pro cloudinary na nossa conta
+```
+agora vamos importar mais uma ferramenta para ajudar a gente com o upload de imagens
+em /backend
+```bash
+npm i express-fileupload
+```
+- para fazer uploads vamos usar um /tmp/ folder e impartar uma funcao path para lidar com diretorios
+
+e entao no index.js vamos importar e app.use essa ferramenta
+```js
+import fileUpload from "express-fileupload";
+import path from "path";
+//
+//
+const __dirname = path.resolve();
+//
+//
+app.use(fileUpload({
+  useTempFiles: true,
+  tempFileDir: path.join(__dirname, "tmp"), //dirname eh o diretorio atual, e nele vamos criar um tmp que armazenara os files ateh serem uploaded pro cloudinary
+    createParentPath: true, // se o diretorio nao existir ele cria
+    limits: {
+      fileSize: 10 * 1024 * 1024, // 10MB max file size
+    },
+}));    // deve ficar antes de routes para limitar o tamanho dos files antes de qualquer upload do usuario
+```
+
+va para admin.routes.js e altere o router
+```js
+import { Router } from "express";
+import { createSong } from "../controller/admin.controller.js";
+import { protectRoute, requireAdmin } from "../middleware/auth.middleware.js";
+
+const router = Router();
+
+router.post("/songs", protectRoute, requireAdmin, createSong);
+
+export default router;
+
+```
+no .env
+```
+NODE_ENV=development
+```
+no index.js
+```js
+// error handler
+app.use((err, req, res, next) => {
+  res.status(500).json({ message: process.env.NODE_ENV === "production" ? "Internal Server Error" : err.message });
+});
+```
+
+com esse error handler ele usa next(error) para enviar a mesma mensagem em tudo mas tem que por next junto de req, res
+atualize os controllers que precisam disso
+
+
+agora vamos começar a salvar as musicas pq a gente tinha soh criado as musicas
+vamos mandar isso pro cloudinary
+
+
+no admin.controller.js ele cria as funcoes para criar e deletar musicas e albums
+no admin.routes.js ele cria as rotas para criar e deletar musicas e albums com metodos delete e post procura por id os dados a serem manipulados
+
+
+uma ultima coisa pro admin eh checar se é admin pra monstrar um botao de admin dashboard no client
+fazer um request prum endpoint /check que diz se eh admin ou nao pra mostrar o botao ou nao
+
+
+num sei onde cê parou... nem lembro qual parada q ele tava fazendo....
+
+sei q da pau faltando a publishable key.... se comentar no index o app.use clerkMiddleware volta normal...
+mas tem um pau no user com req.auth.userId q vem do clerkClient...
+mas vamos continuar... pq ele nao testa as paginas.... só ve se o servidor ta rodando...
 
 
 
 #### Album Routes & Controllers (01:34:28)
+
+album.routes.js
+```js
+import { Router } from "express";
+import { getAllAlbums, getAlbumById } from "../controller/album.controller.js";
+
+const router = Router();
+
+router.get("/", getAllAlbums);
+router.get("/:id", getAlbumById);
+
+export default router;
+```
+
+album.controller.js
+```js
+import { Album } from "../model/album.model.js";
+
+export const getAllAlbums = async (req, res, next) => {
+  try {
+    const albums = await Album.find();
+    res.status(200).json(albums);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getAlbumById = async (req, res, next) => {
+  try {
+    const { albumId } = req.params;
+
+    const album = await Album.findById(albumId).populate("songs");
+
+    if (!album) {
+      return res.status(404).json({ message: "Album not found" });
+    }
+
+    res.status(200).json(album);
+
+  } catch (error) {
+    next(error);
+  }
+};
+```
+
+
+
 
 
 
