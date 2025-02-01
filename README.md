@@ -1410,7 +1410,7 @@ vc nao sabe tudo tudo q foi feito
 
 mas teve os types criados numa pastas com o arquivo index.ts
 teve que copíar 3 pastas com conteudos de public no frontend: albums, songs, cover-images
-tbm criou a store com useMagicStore.ts lah
+tbm criou a store com useMusicStore.ts lah
 
 agr vamos pra frente q tem que criar  as albums pages
 
@@ -1476,7 +1476,7 @@ mano... criou tudo e vc q se foda.. vaia ssistir de novo
 #### Home Page (04:04:47)
 
 
-
+zzzzzzrrraaaaaawwwwww
 
 
 #### Play Song Functionality & Queue (04:36:31)
