@@ -1229,10 +1229,190 @@ assim ele verifica se ja tentou sincronizar o user ou nao pra fazer isso apenas 
 
 e bora pra proxima etapa!!!
 
+vc fuçou no mongoDB pq encanou com os horarios dos timestamps estavam em outro fuso... dai vc acertou pra -3gmt brasília
+
+agr ta com 3 users... mas soh o 88bazanr q eh o email do admin no .env do backend
+
 
 
 #### Main Layout and Left Sidebar (02:38:24)
 
+vamos fazer um main layout que sera aplicado a tudo menos ao adminpage e o authcalbackpage
+basicamente o conteudo central eh que vai mudar pra homepage pras chatpage pras albumpage
+
+no frontend ele instala mais um component do shadcn
+```bash
+npx shadcn@latest add resizable
+```
+
+cria um pasta layout no src e o MainLayout.tsx
+poe um rafce e importa ela no app.tsx
+
+la ele altera e cria uma serie de <Route> com algumas especificacoes e tbm cria pasta e tsx pro chatpage
+
+no mainlayout importa o ResizablePanelGroup e o ResizablePanel e o ResizableHandle
+e com eles vai criando o layout dos menus laterais e central
+o grupo tem determinados paineis que seguem determinadas configuracoes (tamanho, direcao, responsavidade, etc)
+e com o handle ele permite que a gente arraste as barras para mudar o tamanho dos paineis com certo limite
+
+em app.tsx tepois das rotas /sso-callback e /auth-callback ele tem uma rota pro mainlayout com as rotas da homepage, chatpage e provavelmente depois albumpage
+
+
+-durante desenvolvimento do leftsidebar q esta em uma nova components dentro de layout....ta mais ow menos assim:
+
+
+```md
+# ***MainLayout.tsx***
+```
+```tsx
+import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
+import { Outlet } from "react-router-dom";
+import LeftSidebar from "./components/LeftSidebar";
+
+const MainLayout = () => {
+	const isMobile = false;
+	return (
+		<div className="h-screen bg-black text-white flex flex-col">
+			<ResizablePanelGroup direction="horizontal" className="flex-1 flex h-full overflow-hidden p-2">
+				{/* left sidebar */}
+				<ResizablePanel defaultSize={20} minSize={isMobile ? 0 : 10} maxSize={30}>
+					<LeftSidebar />
+				</ResizablePanel>
+
+        <ResizableHandle className="w-2 bg-black rounded-lg transition-colors"/>
+
+				{/* main content */}
+				<ResizablePanel defaultSize={isMobile ? 80 : 60}>
+					<Outlet />
+				</ResizablePanel>
+
+        <ResizableHandle className="w-2 bg-black rounded-lg transition-colors"/>
+
+				{/* right sidebar */}
+				<ResizablePanel defaultSize={20} minSize={0} maxSize={25} collapsedSize={0}>
+					friends activity
+				</ResizablePanel>
+			</ResizablePanelGroup>
+		</div>
+	);
+};
+export default MainLayout;
+```
+
+```md
+# ***App.tsx***
+```
+```tsx
+import { Route, Routes } from "react-router-dom";
+import HomePage from "./pages/home/HomePage";
+import AuthCallbackPage from "./pages/auth-callback/AuthCallbackPage";
+import { AuthenticateWithRedirectCallback } from "@clerk/clerk-react";
+import MainLayout from "./layout/MainLayout";
+import ChatPage from "./pages/chat/ChatPage";
+
+
+function App() {
+	return (
+		<>
+			<Routes>
+				<Route 
+          path="/sso-callback" 
+          element={<AuthenticateWithRedirectCallback signUpForceRedirectUrl={"/auth-callback"} />}
+         />
+				<Route path="/auth-callback" element={<AuthCallbackPage />} />
+
+				<Route element={<MainLayout />}>
+					<Route path="/" element={<HomePage />} />
+					<Route path="/chat" element={<ChatPage />} />
+					
+				</Route>
+
+			</Routes>
+		</>
+	);
+}
+
+export default App;
+```
+
+```md
+# ***LeftSidebar.tsx***
+```
+```tsx
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { HomeIcon } from "lucide-react";
+import { Link } from "react-router-dom";
+
+const LeftSidebar = () => {
+	return (
+		<div className="h-full flex flex-col gap-2">
+			{/* Navigation menu */}
+
+			<div className="rounded-lg bg-zinc-900 p-4">
+				<div className="space-y-2">
+					<Link
+						to={"/"}
+						className={cn
+              (buttonVariants({
+                variant: "ghost",
+                className: "w-full justify-start text-white hover:bg-zinc-800",
+              })
+            )}
+					>
+						<HomeIcon className="mr-2 size-5" />
+						<span className="hidden md:inline">Home</span>
+					</Link>
+				</div>
+			</div>
+			{/* Library section */}
+		</div>
+	);
+};
+export default LeftSidebar;
+
+```
+
+
+dai q nem o home... ele faz embaixo o role pra Messages... basicamente uma copia....
+
+e entao vai pra library session..... tem q puxar um Library do lucid react
+
+dai vai no shadcn pra instalar um outro component
+
+npx shadcn@latest add scroll-area
+
+faz barra de rolagem se for grande.....
+
+e solta a tag ScrollArea na library section ***** tem q importar do ***@components/ui/scroll-area***
+
+
+sai criando umas paradas.;... outra tal de pasta skeletons dentro co components do src... e manda pegar o codigo no repo do projeto
+no mesmo lugar vc acha o PlaylistSkeleton.tsx e copiar tudo pq nunca mias vai alterar esse codigo ele diz...
+
+
+lah aparece umas sombras da imagem e nome da musica e artista em baixo... fucei e mudei a animacao pra girar a imagem durante o carregamente....
+
+pah e tals... dai ele nao vai fazer admin page agr... mas vai dar um jeito de meter umas musicas lah... fala sobre hardcoded... e vamo pro backend fazer alguams paradas...
+
+
+
+de enovo ele fala pra ir no repo pegar um arquivo q ta no backend/src/seeds/songs.js
+dai copia lah e zas zas
+
+
+
+
+3:15 vc morreu
+
+bom.....
+vc nao sabe tudo tudo q foi feito
+
+mas teve os types criados numa pastas com o arquivo index.ts
+teve que copíar 3 pastas com conteudos de public no frontend: albums, songs, cover-images
+tbm criou a store com useMagicStore.ts lah
+
+agr vamos pra frente q tem que criar  as albums pages
 
 
 
