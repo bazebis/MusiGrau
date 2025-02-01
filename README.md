@@ -1458,14 +1458,16 @@ no scrol area vc fez o main content o bg gradient o content o play button o tabl
 pros tables ele fala q da pras usar so shadcn... mas vai fazer na mao mesmo
 
 
+eh complicadinho criar tudo.. mas rolou top...
 
-
-
+bora proxima sessao
 
 
 
 
 #### Friends Activity (03:47:45)
+
+mano... criou tudo e vc q se foda.. vaia ssistir de novo
 
 
 
