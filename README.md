@@ -1482,7 +1482,9 @@ zzzzzzrrraaaaaawwwwww
 #### Play Song Functionality & Queue (04:36:31)
 
 
+9:47 da manhana.... parou nos 4:48
 
+no usPlayerStore fazendo a funcao do toggle play
 
 
 #### Play Button Component (05:12:48)
