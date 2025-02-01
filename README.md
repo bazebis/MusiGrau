@@ -1419,6 +1419,48 @@ agr vamos pra frente q tem que criar  as albums pages
 
 #### Album Page (03:25:52)
 
+em app.tsx ele copia a rota dos chats e altera pra albumpage
+dai criar as pastas e files com rafce...importa no app e dai quando clica em home messages e nas playlists do album, tbm tem pagina agr
+
+*** voce tava tendo um b.o. pq tinha uma direnteca no codigo do leftsidebar...
+o endereco do link do album.map tava "to/album"
+e na rota do app tava "to/albums"
+dai abria uma paginda q nao existia q estava sem o main layout. dai perdia as barras laterais
+
+dai ele fala q o skeleton q a gente usou antes eh do shadcn, e que podemos instalar por lah...
+mas fizemos na mao pra entender a logica....
+tanto q eh nessa parada q vc ficou alterando o css pra mexer nas cores, animacoes, etc
+
+
+na album page vamos ter
+
+- fundo degrade
+- imagem do album
+- textinho 'album'
+- nome do album
+- artista
+- total de musicas
+- ano de lançamente
+- dai teremos uma tabela com os numeros title released date duration
+dai ele nem falou... mas tbm tem antes da tabela um botao de play
+
+
+
+na pagina do album queremos que ele 'fetch' um determinado album com a 'id' do link
+pra isso vamos criar uma funcao no useMusicStore
+
+vc fez a funcao e quase acertou tudo.... soh nao usou current album em vez de album...
+
+dai fazendo a album page
+
+no scrol area vc fez o main content o bg gradient o content o play button o table content e o table header
+
+pros tables ele fala q da pras usar so shadcn... mas vai fazer na mao mesmo
+
+
+
+
+
 
 
 
