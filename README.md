@@ -1486,6 +1486,71 @@ zzzzzzrrraaaaaawwwwww
 
 no usPlayerStore fazendo a funcao do toggle play
 
+depois de entender todos os erros q dava no seu.....
+vc viu q foi tudo **ERRO DE DIGITAÇÃO!!!!!!**
+
+**POOOTA FALTA DE ATENÇAO!!!**
+
+**1. vacilo no case sensitive**
+  **- c    •••    C**
+
+**2. espaçamento inconveniente entre a variavel e o valor atribuido**
+  **- varX : valor   •••    varX:valor**
+
+**3. mandou bem em tentar criar algumas funçoes sozinho**
+
+# 10. e arrebentou fazendo botoes de << e >> com icones do lucid react
+  **- fez funcoes no album page pra lidar com << e >>**
+  **- fez os botoes e alterou divs pra ficar como queria**
+  **- achou botoes certos e reposicionou com padding pra centralizar eles**
+
+  bora pra proxima
+
+
+  alias
+
+```tsx
+            <div className="px-6 pb-4 flex items-center gap-6">
+              {/* test playPrevious */}
+              <Button onClick={handlePlayPrevious} size="icon" className="w-14 h-14 rounded-full bg-green-500 hover:bg-green-400 hover:scale-105 transition-all pr-1">
+                <Rewind className="h-7 w-7 text-black" />
+              </Button>
+            {/* play button */}
+              <Button onClick={handlePlayAlbum} size="icon" className="w-14 h-14 rounded-full bg-green-500 hover:bg-green-400 hover:scale-105 transition-all">
+                {isPlaying && currentAlbum?.songs.some((song) => song._id === currentSong?._id) ? (
+                  <Pause className="h-7 w-7 text-black" />
+                ): (
+                  <Play className="h-7 w-7 text-black" />
+                )}
+              </Button>
+            {/* </div>
+
+            <div className="px-6 pb-4 flex items-center gap-6"> */}
+            {/* test playNext */}
+              <Button onClick={handlePlayNext} size="icon" className="w-14 h-14 rounded-full bg-green-500 hover:bg-green-400 hover:scale-105 transition-all pl-1">
+                <FastForward className="h-7 w-7 text-black" />
+              </Button>
+            </div>
+```
+
+vc q fez isso ai... o certo era soh
+```tsx
+            
+            {/* play button */}
+            <div className="px-6 pb-4 flex items-center gap-6">
+              <Button onClick={handlePlayAlbum} size="icon" className="w-14 h-14 rounded-full bg-green-500 hover:bg-green-400 hover:scale-105 transition-all">
+                {isPlaying && currentAlbum?.songs.some((song) => song._id === currentSong?._id) ? (
+                  <Pause className="h-7 w-7 text-black" />
+                ): (
+                  <Play className="h-7 w-7 text-black" />
+                )}
+              </Button>
+            </div>
+```          
+
+
+agr sim... bora proxima sessao
+
 
 #### Play Button Component (05:12:48)
 
