@@ -1554,13 +1554,13 @@ agr sim... bora proxima sessao
 
 #### Play Button Component (05:12:48)
 
-
+vc jah tinha fuçado ateh e fez << e >>
 
 
 
 #### Playback Controls Component (05:19:43)
 
-
+deu varios xabus no slider pq vc eh burro e colocou {} onde devia ter  []
 
 
 

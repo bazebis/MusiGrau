@@ -2,16 +2,16 @@ import { usePlayerStore } from "@/stores/usePlayerStore";
 import { useEffect, useRef } from "react";
 
 const AudioPlayer = () => {
-	const audioRef =useRef<HTMLAudioElement>(null);
+	const audioRef = useRef<HTMLAudioElement>(null);
 	const prevSongRef = useRef<string | null>(null);
 
-	const {currentSong, isPlaying, playNext} = usePlayerStore();
+	const { currentSong, isPlaying, playNext } = usePlayerStore();
 
 	//	to hhandle play/pause logic
 	useEffect(() => {
-		if(isPlaying) audioRef.current?.play();
+		if (isPlaying) audioRef.current?.play();
 		else audioRef.current?.pause();
-	},[isPlaying]);
+	}, [isPlaying]);
 
 	// handle song ends
 	useEffect(() => {
@@ -19,31 +19,31 @@ const AudioPlayer = () => {
 
 		const handleEnded = () => {
 			playNext();
-		}
+		};
 
-		audio?.addEventListener("ended", handleEnded)
+		audio?.addEventListener("ended", handleEnded);
 
 		return () => audio?.removeEventListener("ended", handleEnded);
 	}, [playNext]);
 
 	// handle song changes
 	useEffect(() => {
-		if(!audioRef.current || !currentSong) return;
-		
+		if (!audioRef.current || !currentSong) return;
+
 		const audio = audioRef.current;
 		// check is this is actually a new song
 		const isSongChange = prevSongRef.current !== currentSong?.audioUrl;
-		if(isSongChange) {
+		if (isSongChange) {
 			audio.src = currentSong?.audioUrl;
 			// reset the playback position
 			audio.currentTime = 0;
 
 			prevSongRef.current = currentSong?.audioUrl;
 			// play the new song
-			if(isPlaying) audio.play();
+			if (isPlaying) audio.play();
 		}
 	}, [currentSong, isPlaying]);
-	
+
 	return <audio ref={audioRef} />;
 };
 export default AudioPlayer;
