@@ -62,6 +62,10 @@ const AddSongDialog = () => {
         }
       });
 
+      // essa linhas atualizam a tabela de musicas apos adicionar uma nova musica
+      // await useMusicStore.getState().fetchSongs();
+      // await useMusicStore.getState().fetchStats();
+
       setNewSong({
         title: "",
         artist: "",
