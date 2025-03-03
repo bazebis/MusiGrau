@@ -2,9 +2,11 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useMusicStore } from "@/stores/useMusicStore";
 import { usePlayerStore } from "@/stores/usePlayerStore";
-import { Clock, FastForward, Pause, Play, Rewind } from "lucide-react";
+import { useChatStore } from "@/stores/useChatStore";
+import { Clock, FastForward, ListPlus, Pause, Play, Rewind } from "lucide-react";
 import { useEffect } from "react";
 import { useParams } from "react-router-dom";
+import { Song } from "@/types";
 
 export const formatDuration = (seconds: number) => {
   const minutes = Math.floor(seconds / 60);
@@ -16,6 +18,7 @@ const AlbumPage = () => {
 	const { albumId } = useParams();
 	const { fetchAlbumById, currentAlbum, isLoading } = useMusicStore();
   const { currentSong, isPlaying, playAlbum, togglePlay, playNext, playPrevious } = usePlayerStore();
+  const { addSongToPlaylist } = useChatStore();
 
 	useEffect(() => {
 		if (albumId) fetchAlbumById(albumId);
@@ -34,10 +37,10 @@ const AlbumPage = () => {
     }
   }
 
-  const handlePlaySong = (index: number) => {
-    if (!currentAlbum) return;
-    playAlbum(currentAlbum?.songs, index);
-  }
+  // const handlePlaySong = (index: number) => {
+  //   if (!currentAlbum) return;
+  //   playAlbum(currentAlbum?.songs, index);
+  // }
 
   const handlePlayNext = () => {
     if (!currentAlbum) return;
@@ -47,6 +50,10 @@ const AlbumPage = () => {
   const handlePlayPrevious = () => {
     if (!currentAlbum) return;
     playPrevious();
+  }
+
+  const handleAddToQueue = (song: Song) => {
+    addSongToPlaylist(song._id);
   }
 
 	return (
@@ -109,6 +116,9 @@ const AlbumPage = () => {
                 <div>
                   <Clock className="w-4 h-4"/>
                 </div>
+                <div>
+                  ...
+                </div>
               </div>
 
               {/* songs list */}
@@ -120,7 +130,10 @@ const AlbumPage = () => {
                     return (
                       <div
                         key={song._id}
-                        onClick={() => handlePlaySong(index)}
+                        onClick={() => {
+                          handleAddToQueue(song);
+                          alert(`"${song.title}" adicionada à fila!`);
+                        }}
                         className={"grid grid-cols-[16px_4fr_2fr_1fr] gap-4 py-2 text-sm text-zinc-400 hover:bg-white/5 rounded-md group cursor-pointer"}
                       >
                         <div className="flex items-center justify-center">
@@ -130,7 +143,7 @@ const AlbumPage = () => {
                             <span className="group-hover:hidden">{index + 1}</span>
                           )}
                           {!isCurrentSong && (
-                            <Play className="h-4 w-4 hidden group-hover:block"/>
+                            <ListPlus className="h-4 w-4 hidden group-hover:block"/>
                           )}
                         </div>
                         

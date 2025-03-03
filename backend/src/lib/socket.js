@@ -1,5 +1,7 @@
 import { Server } from "socket.io";
 import { Message } from "../models/message.model.js";
+import { Playlist } from "../models/playlist.model.js"; // 🔄 Importamos o modelo da playlist
+
 
 export const initializeSocket = (server) => {
 	const io = new Server(server, {
@@ -53,6 +55,32 @@ export const initializeSocket = (server) => {
 				socket.emit("message_error", error.message);
 			}
 		});
+
+				// 🔄 NOVOS EVENTOS: SINCRONIZAÇÃO DA PLAYLIST
+				socket.on("getPlaylist", async () => {
+					const playlist = await Playlist.findOne().populate("queue");
+					socket.emit("playlistUpdated", playlist); // 🔄 Envia a playlist ao cliente que solicitou
+				});
+		
+				socket.on("addSong", async (id) => {
+					const playlist = await Playlist.findOneAndUpdate(
+						{},
+						{ $push: { queue: id } },
+						{ new: true, upsert: true }
+					).populate("queue");
+		
+					io.emit("playlistUpdated", playlist); // 🔄 Atualiza a playlist para todos os usuários
+				});
+		
+				socket.on("removeSong", async (id) => {
+					const playlist = await Playlist.findOneAndUpdate(
+						{},
+						{ $pull: { queue: id } },
+						{ new: true }
+					).populate("queue");
+		
+					io.emit("playlistUpdated", playlist); // 🔄 Atualiza a playlist para todos os usuários
+				});
 
 		socket.on("disconnect", () => {
 			let disconnectedUserId;

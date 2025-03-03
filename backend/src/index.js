@@ -17,6 +17,8 @@ import authRoutes from "./routes/auth.route.js";
 import songRoutes from "./routes/song.route.js";
 import albumRoutes from "./routes/album.route.js";
 import statRoutes from "./routes/stat.route.js";
+import playlistRoutes from "./routes/playlist.route.js"; // 🔄 Importa as rotas da playlist
+
 
 dotenv.config();
 
@@ -70,6 +72,8 @@ app.use("/api/auth", authRoutes);
 app.use("/api/songs", songRoutes);
 app.use("/api/albums", albumRoutes);
 app.use("/api/stats", statRoutes);
+app.use("/api/playlist", playlistRoutes); // 🔄 Adiciona as rotas à API
+
 
 if (process.env.NODE_ENV === "production") {
   app.use(express.static(path.join(__dirname, "../frontend/dist")))

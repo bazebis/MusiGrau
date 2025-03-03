@@ -4,26 +4,18 @@ import { useEffect } from "react";
 import FeaturedSection from "./components/FeaturedSection";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import SectionGrid from "./components/SectionGrid";
-import { usePlayerStore } from "@/stores/usePlayerStore";
+import { useChatStore } from "@/stores/useChatStore";
 
 const HomePage = () => {
-	const { fetchFeaturedSongs, fetchTrendingSongs, fetchMadeForYouSongs, isLoading, madeForYouSongs, featuredSongs, trendingSongs } = useMusicStore();
-
-	const { initializeQueue } = usePlayerStore();
+	const { fetchFeaturedSongs, fetchTrendingSongs, fetchMadeForYouSongs, isLoading, madeForYouSongs, trendingSongs } = useMusicStore();
+	const { fetchPlaylist } = useChatStore();
 
 	useEffect(() => {
 		fetchFeaturedSongs();
 		fetchTrendingSongs();
 		fetchMadeForYouSongs();
-	}, [fetchFeaturedSongs, fetchTrendingSongs, fetchMadeForYouSongs]);
-
-	useEffect(() => {
-		if(madeForYouSongs.length > 0 && featuredSongs.length > 0 && trendingSongs.length > 0) {
-			const allSongs = [...featuredSongs, ...madeForYouSongs, ...trendingSongs];
-			initializeQueue(allSongs);
-			
-		}
-	}, [initializeQueue, madeForYouSongs, trendingSongs, featuredSongs]);
+		fetchPlaylist(); // 🔹 Carregar a playlist global ao entrar na página
+	}, [fetchFeaturedSongs, fetchTrendingSongs, fetchMadeForYouSongs, fetchPlaylist]);
 
 	return (
 		<main className="rounded-md overflow-hidden h-full bg-gradient-to-b from-zinc-800 to-zinc-900">

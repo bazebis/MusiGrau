@@ -1,5 +1,5 @@
 import { axiosInstance } from "@/lib/axios";
-import { Message, User } from "@/types";
+import { Message, User, Playlist } from "@/types"; // 🔄 Importamos "Song" para representar músicas
 import { create } from "zustand";
 import { io } from "socket.io-client";
 
@@ -13,13 +13,17 @@ interface ChatStore {
   userActivities: Map<string, string>;
   messages: Message[];
   selectedUser: User | null;
-  
+  playlist: Playlist | null; // 🔄 Estado para armazenar a playlist global
+
   fetchUsers: () => Promise<void>;
   initSocket: (userId: string) => void;
   disconnectSocket: () => void;
   sendMessage: (receiverId: string, senderId: string, content: string) => void;
   fetchMessages: (userId: string) => Promise<void>;
   setSelectedUser: (user: User | null) => void;
+  fetchPlaylist: () => void; // 🔄 Nova função para buscar a playlist do servidor
+  addSongToPlaylist: (songId: string) => void; // 🔄 Adicionar música via WebSocket
+  removeSongFromPlaylist: (songId: string) => void; // 🔄 Remover música via WebSocket
 }
 
 const baseURL = import.meta.env.MODE === "development" ? "http://localhost:5000" : "/";
@@ -27,7 +31,7 @@ const baseURL = import.meta.env.MODE === "development" ? "http://localhost:5000"
 const socket = io(baseURL, {
   autoConnect: false, // only connect if user is authenticated
   withCredentials: true,
-})
+});
 
 export const useChatStore = create<ChatStore>((set, get) => ({
   users: [],
@@ -39,23 +43,24 @@ export const useChatStore = create<ChatStore>((set, get) => ({
   userActivities: new Map(),
   messages: [],
   selectedUser: null,
+  playlist: null, // 🔄 Inicializamos a playlist vazia
 
-  setSelectedUser: (user) => set({ selectedUser: user }), 
+  setSelectedUser: (user) => set({ selectedUser: user }),
 
   fetchUsers: async () => {
-    set({isLoading: true, error: null});
+    set({ isLoading: true, error: null });
     try {
       const response = await axiosInstance.get("/users");
-      set({users: response.data});
-    } catch (error:any) {
-      set({error: error.response.data.message});
+      set({ users: response.data });
+    } catch (error: any) {
+      set({ error: error.response.data.message });
     } finally {
-      set({isLoading: false});
+      set({ isLoading: false });
     }
   },
 
   initSocket: (userId) => {
-    if(!get().isConnected) {
+    if (!get().isConnected) {
       socket.auth = { userId };
       socket.connect();
 
@@ -63,54 +68,60 @@ export const useChatStore = create<ChatStore>((set, get) => ({
 
       socket.on("users_online", (users: string[]) => {
         set({ onlineUsers: new Set(users) });
-      })
+      });
 
       socket.on("activities", (activities: [string, string][]) => {
         set({ userActivities: new Map(activities) });
-      })
+      });
 
       socket.on("user_connected", (userId: string) => {
         set((state) => ({
           onlineUsers: new Set([...state.onlineUsers, userId]),
-        }))
-      })
+        }));
+      });
 
       socket.on("user_disconnected", (userId: string) => {
         set((state) => {
           const newOnlineUsers = new Set(state.onlineUsers);
           newOnlineUsers.delete(userId);
           return { onlineUsers: newOnlineUsers };
-        })
-      })
+        });
+      });
 
       socket.on("receive_message", (message: Message) => {
         set((state) => ({
           messages: [...state.messages, message],
-        }))
-      })
+        }));
+      });
 
       socket.on("message_sent", (message: Message) => {
         set((state) => ({
           messages: [...state.messages, message],
-        }))
-      })
+        }));
+      });
 
-      socket.on("activity_updated", ({userId, activity}) => {
+      socket.on("activity_updated", ({ userId, activity }) => {
         set((state) => {
           const newActivities = new Map(state.userActivities);
           newActivities.set(userId, activity);
           return { userActivities: newActivities };
-        })
-      })
+        });
+      });
 
-      set({ isConnected: true })
-      
+      // 🔄 EVENTOS PARA SINCRONIZAÇÃO DA PLAYLIST
+      socket.on("playlistUpdated", (updatedPlaylist: Playlist) => {
+        set({ playlist: updatedPlaylist }); // 🔄 Atualiza o estado global da playlist
+      });
+
+      set({ isConnected: true });
+
+      // 🔄 Buscar a playlist assim que o socket for conectado
+      get().fetchPlaylist();
     }
-
   },
 
   disconnectSocket: () => {
-    if(get().isConnected) {
+    if (get().isConnected) {
       socket.disconnect();
       set({ isConnected: false });
     }
@@ -118,20 +129,41 @@ export const useChatStore = create<ChatStore>((set, get) => ({
 
   sendMessage: async (receiverId, senderId, content) => {
     const socket = get().socket;
-    if(!socket) return;
+    if (!socket) return;
 
     socket.emit("send_message", { receiverId, senderId, content });
   },
 
   fetchMessages: async (userId: string) => {
-    set({isLoading: true, error: null});
+    set({ isLoading: true, error: null });
     try {
       const response = await axiosInstance.get(`/users/messages/${userId}`);
-      set({messages: response.data});
-    } catch (error:any) {
-      set({error: error.response.data.message});
+      set({ messages: response.data });
+    } catch (error: any) {
+      set({ error: error.response.data.message });
     } finally {
-      set({isLoading: false});
+      set({ isLoading: false });
     }
-  }
+  },
+
+  // 🔄 BUSCAR PLAYLIST DO SERVIDOR
+  fetchPlaylist: () => {
+    const socket = get().socket;
+    if (!socket) return;
+    socket.emit("getPlaylist"); // 🔄 Solicita a playlist ao servidor
+  },
+
+  // 🔄 ADICIONAR MÚSICA À PLAYLIST
+  addSongToPlaylist: (songId: string) => {
+    const socket = get().socket;
+    if (!socket) return;
+    socket.emit("addSong", songId); // 🔄 Envia o evento ao servidor
+  },
+
+  // 🔄 REMOVER MÚSICA DA PLAYLIST
+  removeSongFromPlaylist: (songId: string) => {
+    const socket = get().socket;
+    if (!socket) return;
+    socket.emit("removeSong", songId); // 🔄 Envia o evento ao servidor
+  },
 }));

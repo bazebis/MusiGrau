@@ -10,7 +10,6 @@ export interface Song {
   updatedAt: string;
 }
 
-
 export interface Album {
   _id: string;
   title: string;
@@ -27,7 +26,6 @@ export interface Stats {
   totalArtists: number;
 }
 
-
 export interface Message {
   _id: string;
   senderId: string;
@@ -37,10 +35,20 @@ export interface Message {
   updatedAt: string;
 }
 
-
 export interface User {
   _id: string;
   clerkId: string;
   fullName: string;
   imageUrl: string;
+}
+
+// 🔄 Nova interface para Playlist
+export interface Playlist {
+  _id: string;
+  queue: {
+    song: Song; // 🔄 Música adicionada
+    addedBy: User; // 🔄 Quem adicionou a música
+  }[];
+  createdAt: string;
+  updatedAt: string;
 }
