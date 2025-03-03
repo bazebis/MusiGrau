@@ -6,6 +6,7 @@ import MainLayout from "./layout/MainLayout";
 import ChatPage from "./pages/chat/ChatPage";
 import AlbumPage from "./pages/album/AlbumPage";
 import AdminPage from "./pages/admin/AdminPage";
+import QueuePage from "./pages/queue/QueuePage";
 
 import { Toaster } from "react-hot-toast";
 import NotFoundPage from "./pages/404/NotFoundPage";
@@ -25,6 +26,7 @@ function App() {
 					<Route path="/" element={<HomePage />} />
 					<Route path="/chat" element={<ChatPage />} />
 					<Route path="/albums/:albumId" element={<AlbumPage />} /> {/* 	o valor de albumId sera o nome do que aparecera no console loge com o valor da id do album.... se colocar x... vai ser oobjeto x do console no F12 */}
+					<Route path="/queue" element={<QueuePage />} />
 					<Route path="*" element={<NotFoundPage />} />
 					
 				</Route>

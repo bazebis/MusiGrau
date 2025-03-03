@@ -2,6 +2,7 @@ import { axiosInstance } from "@/lib/axios";
 import { Message, User } from "@/types";
 import { create } from "zustand";
 import { io } from "socket.io-client";
+import { usePlayerStore } from "./usePlayerStore";
 
 interface ChatStore {
   users: User[];
@@ -102,6 +103,11 @@ export const useChatStore = create<ChatStore>((set, get) => ({
           return { userActivities: newActivities };
         })
       })
+
+      socket.on("queue_updated", (queue) => {
+        usePlayerStore.getState().initializeQueue(queue); // Atualiza a fila de músicas em tempo real
+      });
+      
 
       set({ isConnected: true })
       

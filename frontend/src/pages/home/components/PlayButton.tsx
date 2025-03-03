@@ -1,27 +1,42 @@
 import { Button } from "@/components/ui/button";
+import { ListPlus, Play } from "lucide-react";
 import { usePlayerStore } from "@/stores/usePlayerStore";
 import { Song } from "@/types";
-import { Pause, Play } from "lucide-react";
+import { useAuthStore } from "@/stores/useAuthStore"; // Correção: Usando a store de autenticação
 
-const PlayButton = ({ song }: { song: Song }) => {
-	const { currentSong, isPlaying, setCurrentSong, togglePlay } = usePlayerStore();
-	const isCurrentSong = currentSong?._id === song._id;
+interface PlayButtonProps {
+  song: Song;
+}
 
-	const handlePlay = () => {
-		if (isCurrentSong) togglePlay();
-		else setCurrentSong(song);
-	};
+const PlayButton: React.FC<PlayButtonProps> = ({ song }) => {
+  const addToQueue = usePlayerStore((state) => state.addToQueue);
+  const { isAdmin } = useAuthStore(); // Obtém a informação se o usuário é admin
 
-	return (
-		<Button
-			size={"icon"}
-			onClick={handlePlay}
-			className={`absolute bottom-3 right-2 bg-green-500 hover:bg-green-400 hover:scale-105 transition-all opacity-0 translate-y-2 group-hover:translate-y-0 ${
-				isCurrentSong ? `opacity-100` : `opacity-0 group-hover:opacity-100`
-			}`}
-		>
-			{isCurrentSong && isPlaying ? (<Pause className="size-5 text-black" />) : (<Play className="size-5 text-black" />)}
-		</Button>
-	);
+  return (
+    <div className="flex gap-2">
+      {/* Botão de adicionar à fila - visível para todos */}
+      <Button
+        size="icon"
+        variant="ghost"
+        className="hover:text-white text-zinc-400"
+        onClick={() => addToQueue(song)}
+      >
+        <ListPlus className="h-5 w-5" />
+      </Button>
+
+      {/* Botão de Play - apenas admins podem ver */}
+      {isAdmin && (
+        <Button
+          size="icon"
+          variant="ghost"
+          className="hover:text-white text-green-400"
+          onClick={() => console.log("Tocar música", song.title)}
+        >
+          <Play className="h-5 w-5" />
+        </Button>
+      )}
+    </div>
+  );
 };
+
 export default PlayButton;
